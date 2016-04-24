@@ -4,10 +4,11 @@ The primary requirement of the structure is that the organization MUST have a CE
 
 The remainder of this project is fairly self-explanatory, but I will outline it anyway:
 1. For every person in the organization, there is a list of people who report directly to them, ordered by seniority.
-2. Every person in the organization has one group they are a part of and a role within that group.
-	A. The CEO's group is always Management.
-	B. In every group, there is always one person whose role is "Head". This role is always given to the most senior person in the group.
-	C. When a new employee is added, they automatically take on the group of their employer. Their role is blank until modified.
-3. When a person is fired, their most senior employee is promoted into their place. As in 4, all people reporting to that most senior employee are also promoted, but they are now the least senior people reporting to that employee.
-4. Anyone not in senior management (CEO or directly reporting to the CEO) can be promoted. This promotion moves them and their entire group up one level in the organization. To be speciific, the promoted person becomes their previous boss's boss's least senior employee.
-All names of groups and people in the organization must be unique.
+2. When a person is removed from the organization, everyone who reports to them becomes the least senior employees of their removed person's boss, unless the removed person is the CEO. If the CEO is removed, their most senior employee becomes CEO and all people who report to that person become their least senior employees, after the former CEO's employees.
+3. Any person can be moved from one position to another, though they will not retain their employees if you do so.
+	a. No person can be moved directly to CEO status.
+4. Anyone but the CEO can be promoted. When this happens, every employee of that person stays an employee of that person and is effecively promoted as well.
+
+All names must be unique.
+All names must be at least two characters long.
+All names must only contain alphanumerics, spaces, or dashes.

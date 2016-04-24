@@ -1,13 +1,12 @@
 #ifndef TREE_H_INCLUDED
 #define TREE_H_INCLUDED
 
-//#include "Employee.h"
+struct edge;
 
 struct node{
     std::string name;
     node* boss = NULL;
     edge* employees = NULL;
-    group* group = NULL;
     node(std::string person_name, node* boss_ptr){
         name = person_name;
         boss = boss_ptr;
@@ -16,37 +15,31 @@ struct node{
 
 struct edge{
     edge* next = NULL;
-    node* node = NULL;
+    node* n = NULL;
     edge(node* node_ptr){
-        node = node_ptr;
-    }
-};
-
-struct group{
-    std::string name;
-    edge* members = NULL;
-    group* next = NULL;
-    group(std::string group_name){
-        name = group_name;
+        n = node_ptr;
     }
 };
 
 class Tree{
 public:
-    void addNode(std::string name, std::string boss);
-    void addToGroup(std::string person_name, std::string group);
-    void exportOrgToFile();
-    void importOrgFromFile();
-    void personInfo(std::string name);
+    Tree();
+    ~Tree();
+    void addPerson(std::string person_name, std::string boss);
+    void movePerson(std::string person_name, std::string newBoss);
+    void personInfo(std::string person_name);
     std::string printOrgStructure();
-protected:
+    void promotePerson(std::string person_name);
+    void removePerson(std::string person_name);
 private:
     node* CEO = NULL;
-    edge* employeeList = NULL;
-    group* groups = NULL;
-    void addToBossGroup(node* node);
+    bool acceptableName(std::string name);
     node* findNode(std::string name);
-    std::string personInfo(node* node);
+    node* findNode(std::string name, node* person);
+    void makeCEO();
+    void movePerson(node* person, node* boss);
+    std::string personInfo(node* person);
+    node* removePerson(node* person);
 };
 
 #endif // TREE_H_INCLUDED
