@@ -13,15 +13,16 @@ int main(){
             <<"2. Get Employee Info\n"
             <<"3. Print Organization Structure\n"
             <<"4. Promote Employee\n"
-            <<"5. Remove Employee\n"
-            <<"6. Move Employee\n"
-            <<"7. Quit"<<endl;
+            <<"5. Remove Person\n"
+            <<"6. Move Person\n"
+            <<"7. Move Person and all employees\n"
+            <<"8. Export to file\n"
+            <<"9. Import from file\n"
+            <<"10. Change group\n"
+            <<"11. Quit"<<endl;
         // Declares a MainMenu string to take input
         string MainMenu;
         getline(cin, MainMenu);
-        // Takes only the first character of the input
-        MainMenu = MainMenu.substr(0,1);
-        // Checks that first character against possible values
         if(MainMenu=="1"){
             cout<<"Enter name:"<<endl;
             getline(cin, MainMenu);
@@ -57,6 +58,32 @@ int main(){
             tree.movePerson(MainMenu, bossName);
         }
         else if(MainMenu=="7"){
+            cout<<"Enter name:"<<endl;
+            getline(cin, MainMenu);
+            string bossName;
+            cout<<"Enter new boss's name:"<<endl;
+            getline(cin, bossName);
+            tree.movePersonAndEmployees(MainMenu, bossName);
+        }
+        else if(MainMenu=="8"){
+            cout<<"Enter file name:"<<endl;
+            getline(cin, MainMenu);
+            tree.exportTree(MainMenu);
+        }
+        else if(MainMenu=="9"){
+            cout<<"Enter file name:"<<endl;
+            getline(cin, MainMenu);
+            tree.importTree(MainMenu);
+        }
+        else if(MainMenu=="10"){
+            cout<<"Enter name:"<<endl;
+            getline(cin, MainMenu);
+            string groupName;
+            cout<<"Enter new group name:"<<endl;
+            getline(cin, groupName);
+            tree.changeGroup(MainMenu, groupName);
+        }
+        else if(MainMenu=="11"){
             run = false;
         }
     }

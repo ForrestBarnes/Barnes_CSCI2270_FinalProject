@@ -1,6 +1,6 @@
 THE EASIEST WAY TO RUN THIS PROGRAM: Download the executable "Barnes_CSCI2270_FinalProject" and run it from the terminal using the command "./Barnes_CSCI2270_FinalProject".
 
-This project is designed to take, modify, and (when requested) output the structure of an organization.
+This project is designed to model the structure of an organization.
 
 The primary requirement of the structure is that the organization MUST have a CEO. If no CEO is given or no CEO can be found, this project will do nothing until the user inputs the name of a CEO. When the program starts, creating a CEO is the first thing a user must do.
 

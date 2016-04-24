@@ -29,15 +29,16 @@ Tree::~Tree(){
     }
 };
 
-void Tree::addPerson(string person_name, string boss){
-    if(acceptableName(person_name)){
+void Tree::addPerson(string name, string boss){
+    name = removeWhitespace(name);
+    if(acceptableName(name)){
         node* bossNode = findNode(boss);
         if(bossNode==NULL){
             cout<<"Could not find boss. Make sure name is spelled correctly."<<endl;
         }
         else{
             edge* emplList = bossNode->employees;
-            edge* newEdge = new edge(new node(person_name, bossNode));
+            edge* newEdge = new edge(new node(name, bossNode));
             if(emplList==NULL){
                 bossNode->employees = newEdge;
             }
@@ -52,6 +53,18 @@ void Tree::addPerson(string person_name, string boss){
     }
 };
 
+void Tree::changeGroup(std::string person_name, std::string newGroup){
+    //
+};
+
+void Tree::exportTree(std::string fileName){
+    //
+};
+
+void Tree::importTree(std::string fileName){
+    //
+};
+
 void Tree::movePerson(string person_name, string newBoss){
     node* person = findNode(person_name);
     if(person==NULL){
@@ -64,6 +77,27 @@ void Tree::movePerson(string person_name, string newBoss){
         return;
     }
     movePerson(person, boss);
+};
+
+void Tree::movePersonAndEmployees(std::string person_name, std::string newBoss){
+    node* person = findNode(person_name);
+    if(person==NULL){
+        cout<<"Could not find this person. "
+            <<"Make sure name is spelled correctly."<<endl;
+        return;
+    }
+    if(findNode(newBoss, person)!=NULL){
+        cout<<newBoss<<" reports to "<<person_name
+            <<", making this move impossible."<<endl;
+        return;
+    }
+    node* boss = findNode(newBoss);
+    if(boss==NULL){
+        cout<<"Could not find boss. "
+            <<"Make sure name is spelled correctly."<<endl;
+        return;
+    }
+    //
 };
 
 void Tree::personInfo(string person_name){
@@ -139,19 +173,14 @@ void Tree::promotePerson(string person_name){
 void Tree::removePerson(string person_name){
     node* person = findNode(person_name);
     if(person==NULL){
-        cout<<"Could not find this person. Make sure name is spelled correctly."<<endl;
+        cout<<"Could not find this person. "
+            <<"Make sure name is spelled correctly."<<endl;
         return;
     }
     delete removePerson(person);
 };
 
 bool Tree::acceptableName(string name){
-    while(name[0]==' '){
-        name = name.substr(1, name.length());
-    }
-    while(name[name.length()]==' '){
-        name = name.substr(0, name.length()-1);
-    }
     if(name.length()<2){
         cout<<"A name must include at least two characters."<<endl;
         return false;
@@ -200,6 +229,7 @@ void Tree::makeCEO(){
     do{
         cout<<"Please enter the name of a CEO:"<<endl;
         getline(cin, name);
+        name = removeWhitespace(name);
     }while(!acceptableName(name));
     CEO = new node(name, NULL);
 };
@@ -310,4 +340,14 @@ node* Tree::removePerson(node* person){
     person->boss = NULL;
     person->employees = NULL;
     return person;
+};
+
+string Tree::removeWhitespace(string str){
+    while(str.length()>0 && str[0]==' '){
+        str = str.substr(1, str.length());
+    }
+    while(str.length()>0 && str[str.length()-1]==' '){
+        str = str.substr(0, str.length()-1);
+    }
+    return str;
 };
