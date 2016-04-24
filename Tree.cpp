@@ -115,7 +115,24 @@ void Tree::promotePerson(string person_name){
         }
     }
     else{
-        movePerson(person, person->boss->boss);
+        edge* personEdge = person->boss->employees;
+        edge* newCoworker = person->boss->boss->employees;
+        while(newCoworker->next!=NULL){
+            newCoworker = newCoworker->next;
+        }
+        if(personEdge->n==person){
+            person->boss->employees = personEdge->next;
+        }
+        else{
+            edge* coworker = personEdge;
+            while(coworker->next->n!=person){
+                coworker = coworker->next;
+            }
+            personEdge = coworker->next;
+            coworker->next = personEdge->next;
+        }
+        newCoworker->next = personEdge;
+        person->boss = person->boss->boss;
     }
 };
 
@@ -248,6 +265,7 @@ node* Tree::removePerson(node* person){
                     lastHighEmployee->n->boss = CEO;
                     lastHighEmployee = lastHighEmployee->next;
                 }
+                lastHighEmployee->n->boss = CEO;
                 lastHighEmployee->next = lowerEmployees;
             }
             delete person->employees;
