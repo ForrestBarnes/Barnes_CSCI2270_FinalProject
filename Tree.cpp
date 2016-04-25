@@ -1,5 +1,7 @@
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <sstream>
 #include "Tree.h"
 
 using namespace std;
@@ -9,44 +11,23 @@ Tree::Tree(){
 };
 
 Tree::~Tree(){
-    if(CEO!=NULL){
-        edge* deleteList = CEO->employees;
-        delete CEO;
-        edge* endList = deleteList;
-        while(endList!=NULL && endList->next!=NULL){
-            endList = endList->next;
-        }
-        while(deleteList!=NULL){
-            endList->next = deleteList->n->employees;
-            while(endList->next!=NULL){
-                endList = endList->next;
-            }
-            edge* next = deleteList->next;
-            delete deleteList->n;
-            delete deleteList;
-            deleteList = next;
-        }
-    }
+    deleteEverything(CEO);
 };
 
 void Tree::addPerson(string name, string boss){
     name = removeWhitespace(name);
-    if(acceptableName(name)){
+    if(acceptableName(name, CEO)){
         node* bossNode = findNode(boss);
         if(bossNode==NULL){
             cout<<"Could not find boss. Make sure name is spelled correctly."<<endl;
         }
         else{
-            edge* emplList = bossNode->employees;
             edge* newEdge = new edge(new node(name, bossNode));
-            if(emplList==NULL){
-                bossNode->employees = newEdge;
+            if(bossNode->employees==NULL){
+                bossNode->last = bossNode->employees = newEdge;
             }
             else{
-                while(emplList->next!=NULL){
-                    emplList = emplList->next;
-                }
-                emplList->next = newEdge;
+                bossNode->last = bossNode->last->next = newEdge;
             }
             newEdge->n->boss = bossNode;
         }
@@ -54,15 +35,109 @@ void Tree::addPerson(string name, string boss){
 };
 
 void Tree::changeGroup(std::string person_name, std::string newGroup){
-    //
+    node* person = findNode(person_name);
+    if(person==NULL){
+        cout<<"Could not find employee. Make sure name is spelled correctly."<<endl;
+        return;
+    }
+    if(person==CEO){
+        cout<<"You cannot change the CEO's group."<<endl;
+        return;
+    }
+    person->group = newGroup;
+    if(person->employees!=NULL){
+        string yesNo;
+        cout<<"Change the group of all people who report to this person? (y/n)"<<endl;
+        getline(cin, yesNo);
+        if(yesNo.length()>0 && (yesNo[0]=='y' || yesNo[0]=='Y')){
+            recursiveGroupChange(person, newGroup);
+        }
+    }
 };
 
 void Tree::exportTree(std::string fileName){
-    //
+    ofstream file;
+    file.open(fileName);
+    file.clear();
+    file<<CEO->name<<delim2;
+    edge* printList = new edge(CEO);
+    edge* endofList = printList;
+    while(printList!=NULL){
+        edge* employee = printList->n->employees;
+        while(employee!=NULL){
+            endofList->next = new edge(employee->n);
+            employee = employee->next;
+            endofList = endofList->next;
+        }
+        if(printList->n!=CEO){
+            file<<printList->n->name<<delim<<printList->n->boss->name<<delim;
+            if(printList->n->group!=printList->n->boss->group){
+                file<<printList->n->group;
+            }
+            file<<delim2;
+        }
+        edge* next = printList->next;
+        delete printList;
+        printList = next;
+    }
+    file.close();
 };
 
 void Tree::importTree(std::string fileName){
-    //
+    ifstream file;
+    file.open(fileName);
+    if(!file.is_open()){
+        cout<<"File not found."<<endl;
+        return;
+    }
+    string line;
+    cout<<"Are you sure you want to delete this structure and import a new one? (y/n)"<<endl;
+    getline(cin, line);
+    if(line.length()>0 && (line[0]=='y' || line[0]=='Y')){
+        string errorMsg = "File is corrupt. No changes made.";
+        getline(file, line, delim2);
+        if(!acceptableName(line, NULL)){
+            cout<<errorMsg<<endl;
+            return;
+        }
+        node* newCEO = new node(line, NULL);
+        while(!file.eof()){
+            getline(file, line, delim2);
+            if(line.length()>0){
+                stringstream linestream(line);
+                string name;
+                getline(linestream, name, delim);
+                if(!acceptableName(name, newCEO)){
+                    cout<<errorMsg<<endl;
+                    deleteEverything(newCEO);
+                    return;
+                }
+                string bossName;
+                getline(linestream, bossName, delim);
+                node* boss = findNode(bossName, newCEO);
+                if(boss==NULL){
+                    cout<<errorMsg<<endl;
+                    deleteEverything(newCEO);
+                    return;
+                }
+                edge* newEdge = new edge(new node(name, boss));
+                if(boss->employees==NULL){
+                    boss->last = boss->employees = newEdge;
+                }
+                else{
+                    boss->last = boss->last->next = newEdge;
+                }
+                newEdge->n->boss = boss;
+                getline(linestream, bossName);
+                if(bossName.length()>0){
+                    findNode(name, newCEO)->group = bossName;
+                }
+            }
+        }
+        deleteEverything(CEO);
+        CEO = newCEO;
+    }
+    file.close();
 };
 
 void Tree::movePerson(string person_name, string newBoss){
@@ -97,7 +172,32 @@ void Tree::movePersonAndEmployees(std::string person_name, std::string newBoss){
             <<"Make sure name is spelled correctly."<<endl;
         return;
     }
-    //
+    edge* thisPerson = person->boss->employees;
+    if(thisPerson->n==person){
+        person->boss->employees = thisPerson->next;
+        if(person->boss->employees==NULL){
+            person->boss->last = NULL;
+        }
+    }
+    else{
+        while(thisPerson->next->n!=person){
+            thisPerson = thisPerson->next;
+        }
+        edge* temp = thisPerson->next;
+        thisPerson->next = temp->next;
+        if(person->boss->last==temp){
+            person->boss->last = thisPerson;
+        }
+        thisPerson = temp;
+    }
+    thisPerson->next = NULL;
+    if(boss->employees==NULL){
+        boss->employees = boss->last = thisPerson;
+    }
+    else{
+        boss->last = boss->last->next = thisPerson;
+    }
+    person->boss = boss;
 };
 
 void Tree::personInfo(string person_name){
@@ -146,16 +246,18 @@ void Tree::promotePerson(string person_name){
             empl->next = exCEO->next;
             exCEO->next = CEO->employees;
             CEO->employees = exCEO;
+            if(CEO->last = exCEO){
+                CEO->last = empl;
+            }
         }
     }
     else{
         edge* personEdge = person->boss->employees;
-        edge* newCoworker = person->boss->boss->employees;
-        while(newCoworker->next!=NULL){
-            newCoworker = newCoworker->next;
-        }
         if(personEdge->n==person){
             person->boss->employees = personEdge->next;
+            if(person->boss->employees==NULL){
+                person->boss->last = NULL;
+            }
         }
         else{
             edge* coworker = personEdge;
@@ -164,9 +266,10 @@ void Tree::promotePerson(string person_name){
             }
             personEdge = coworker->next;
             coworker->next = personEdge->next;
+            personEdge->next = NULL;
         }
-        newCoworker->next = personEdge;
         person->boss = person->boss->boss;
+        person->boss->last = person->boss->last->next = personEdge;
     }
 };
 
@@ -180,12 +283,12 @@ void Tree::removePerson(string person_name){
     delete removePerson(person);
 };
 
-bool Tree::acceptableName(string name){
+bool Tree::acceptableName(string name, node* top){
     if(name.length()<2){
         cout<<"A name must include at least two characters."<<endl;
         return false;
     }
-    if(findNode(name)!=NULL){
+    if(findNode(name, top)!=NULL){
         cout<<"This name already exists in the organization. "
             <<"Please choose a different name."<<endl;
         return false;
@@ -203,6 +306,27 @@ bool Tree::acceptableName(string name){
     return true;
 };
 
+void Tree::deleteEverything(node* top){
+    if(top!=NULL){
+        edge* deleteList = top->employees;
+        delete top;
+        edge* endList = deleteList;
+        while(endList!=NULL && endList->next!=NULL){
+            endList = endList->next;
+        }
+        while(deleteList!=NULL){
+            endList->next = deleteList->n->employees;
+            while(endList->next!=NULL){
+                endList = endList->next;
+            }
+            edge* next = deleteList->next;
+            delete deleteList->n;
+            delete deleteList;
+            deleteList = next;
+        }
+    }
+};
+
 node* Tree::findNode(string name){
     return findNode(name, CEO);
 };
@@ -214,6 +338,7 @@ node* Tree::findNode(string name, node* person){
     else{
         edge* empl = person->employees;
         while(empl!=NULL){
+            //cout<<name<<endl;
             node* toReturn = findNode(name, empl->n);
             if(toReturn!=NULL){
                 return toReturn;
@@ -230,7 +355,7 @@ void Tree::makeCEO(){
         cout<<"Please enter the name of a CEO:"<<endl;
         getline(cin, name);
         name = removeWhitespace(name);
-    }while(!acceptableName(name));
+    }while(!acceptableName(name, NULL));
     CEO = new node(name, NULL);
 };
 
@@ -239,14 +364,10 @@ void Tree::movePerson(node* person, node* boss){
         removePerson(person);
         person->boss = boss;
         if(boss->employees==NULL){
-            boss->employees = new edge(person);
+            boss->last = boss->employees = new edge(person);
         }
         else{
-            edge* empl = boss->employees;
-            while(empl->next!=NULL){
-                empl = empl->next;
-            }
-            empl->next = new edge(person);
+            boss->last = boss->last->next = new edge(person);
         }
     }
 };
@@ -255,7 +376,8 @@ string Tree::personInfo(node* person){
     if(person==NULL){
         return "Could not find Employee. Make sure name is spelled correctly.";
     }
-    string returnString = string("Name: ").append(person->name).append("\nBoss: ");
+    string returnString = string("Name: ").append(person->name);
+    returnString.append("\nGroup: ").append(person->group).append("\nBoss: ");
     if(person->boss==NULL){
         returnString.append("N/A");
     }
@@ -277,30 +399,37 @@ string Tree::personInfo(node* person){
     return returnString;
 };
 
+void Tree::recursiveGroupChange(node* person, string newGroup){
+    person->group = newGroup;
+    edge* empl = person->employees;
+    while(empl!=NULL){
+        recursiveGroupChange(empl->n, newGroup);
+        empl = empl->next;
+    }
+};
+
 node* Tree::removePerson(node* person){
     if(person==NULL){
         return person;
     }
     if(person==CEO){
         if(person->employees==NULL){
-            CEO = NULL;
             makeCEO();
         }
         else{
             CEO = person->employees->n;
             if(person->employees->next!=NULL){
-                edge* lowerEmployees = CEO->employees;
-                edge* lastHighEmployee = CEO->employees = person->employees->next;
-                while(lastHighEmployee->next!=NULL){
-                    lastHighEmployee->n->boss = CEO;
-                    lastHighEmployee = lastHighEmployee->next;
+                person->last->next = CEO->employees;
+                edge* temp = CEO->employees = person->employees->next;
+                while(temp!=person->last->next){
+                    temp->n->boss = CEO;
+                    temp = temp->next;
                 }
-                lastHighEmployee->n->boss = CEO;
-                lastHighEmployee->next = lowerEmployees;
             }
             delete person->employees;
-            person->employees = NULL;
+            person->last = person->employees = NULL;
             CEO->boss = NULL;
+            CEO->group = person->group;
         }
         return person;
     }
@@ -309,7 +438,7 @@ node* Tree::removePerson(node* person){
         coworker = coworker->next;
         delete person->boss->employees;
         if(coworker==NULL){
-            coworker = person->boss->employees = person->employees;
+            coworker = person->boss->last = person->boss->employees = person->employees;
             while(coworker!=NULL){
                 coworker->n->boss = person->boss;
                 coworker = coworker->next;
@@ -325,16 +454,14 @@ node* Tree::removePerson(node* person){
         }
         edge* next = coworker->next;
         coworker->next = next->next;
-        delete next;
-    }
-    if(coworker!=NULL){
-        while(coworker->next!=NULL){
-            coworker = coworker->next;
+        if(person->boss->last==next){
+            person->boss->last = coworker;
         }
-        coworker = coworker->next = person->employees;
-        while(coworker!=NULL){
-            coworker->n->boss = person->boss;
-            coworker = coworker->next;
+        delete next;
+        person->boss->last->next = person->employees;
+        while(person->boss->last->next!=NULL){
+            person->boss->last->n->boss = person->boss;
+            person->boss->last = person->boss->last->next;
         }
     }
     person->boss = NULL;

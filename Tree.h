@@ -8,6 +8,7 @@ struct node{
     std::string group;
     node* boss = NULL;
     edge* employees = NULL;
+    edge* last = NULL;
     node(std::string person_name, node* boss_ptr){
         name = person_name;
         boss = boss_ptr;
@@ -44,13 +45,16 @@ public:
     void removePerson(std::string person_name);
 private:
     node* CEO = NULL;
-    bool acceptableName(std::string name);
-    void deleteEverything();
+    char delim = ',';
+    char delim2 = '\n';
+    bool acceptableName(std::string name, node* top);
+    void deleteEverything(node* top);
     node* findNode(std::string name);
     node* findNode(std::string name, node* person);
     void makeCEO();
     void movePerson(node* person, node* boss);
     std::string personInfo(node* person);
+    void recursiveGroupChange(node* person, std::string newGroup);
     node* removePerson(node* person);
     std::string removeWhitespace(std::string str);
 };
