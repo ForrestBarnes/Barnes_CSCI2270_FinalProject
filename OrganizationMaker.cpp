@@ -6,8 +6,7 @@ using namespace std;
 
 int main(){
     Tree tree;
-    bool run = true;
-    while(run){
+    while(true){
         cout<<"===========Main Menu===========\n"
             <<"1. Add an Employee\n"
             <<"2. Get Employee Info\n"
@@ -37,7 +36,7 @@ int main(){
             tree.personInfo(MainMenu);
         }
         else if(MainMenu=="3"){
-            cout<<tree.printOrgStructure()<<endl;
+            tree.printOrgStructure();
         }
         else if(MainMenu=="4"){
             cout<<"Enter name:"<<endl;
@@ -84,9 +83,8 @@ int main(){
             tree.changeGroup(MainMenu, groupName);
         }
         else if(MainMenu=="11"){
-            run = false;
+            cout<<"Goodbye!\n";
+            return 0;
         }
     }
-    cout<<"Goodbye!\n";
-    return 0;
 }
