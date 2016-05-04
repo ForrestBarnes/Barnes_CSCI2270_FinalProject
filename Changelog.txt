@@ -1,3 +1,16 @@
+Hey there Forrest!!
+   This project you made is rather cool. Seems like a simple management program on the outside, but the inside is more complex than I was 
+prepared for. I'm still mostly a novice at C++, but I can pull my own. Anyway, I didn't find any bugs, so I added a simple company name feature
+to your code. Now when the program starts, it prompts the user for a company name before the CEO's name. The company name will appear when the
+organization structure is printed; it will also appear above the CEO's name when the file is exported. When importing a file, the first
+line should be the company name without a comma then the second line is the CEO's name. I also changed the file import to account for c-strings
+instead of strings. This makes your program work on older versions of c++, because the file.open() function needs c-strings on older versions.
+Your program is unchanged other than that.
+Cheers,
+   Alex H.
+
+
+
 //----------------------------------------------------------------------
 //------------------------Added Features--------------------------------
 //          -OrganizationMaker.cpp
