@@ -1,0 +1,14 @@
+//----------------------------------------------------------------------
+//------------------------Added Features--------------------------------
+//          -OrganizationMaker.cpp
+//              - Line 86       change company name option
+//          - Tree.h
+//              - Line 58       added company name change function
+//              - Line 72       added company name variable
+//          - Tree.cpp
+//              - Line 10       input for company name
+//              - Line 103      added company name to export function
+//              - Line 144-146, added company name changer to import file
+//                     196
+//              - Line 285-286  prints company name with organization structure
+//              - Line 620-623  company name change function

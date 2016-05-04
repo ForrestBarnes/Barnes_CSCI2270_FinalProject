@@ -55,6 +55,7 @@ public:
     void printOrgStructure();
     void promotePerson(std::string person_name);
     void removePerson(std::string person_name);
+    void companyNameChange();//added feature
 private:
     node* CEO = NULL;
     char delim = ',';
@@ -69,6 +70,7 @@ private:
     void recursiveGroupChange(node* person, std::string newGroup);
     node* removePerson(node* person);
     std::string removeWhitespace(std::string str);
+    std::string companyName;//Added Feature
 };
 
 #endif // TREE_H_INCLUDED

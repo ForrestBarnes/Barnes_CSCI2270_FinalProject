@@ -7,6 +7,7 @@
 using namespace std;
 
 Tree::Tree(){
+    companyNameChange();
     makeCEO();
 };
 
@@ -89,7 +90,7 @@ leastSeniorEmployee,boss,group
  */
 void Tree::exportTree(std::string fileName){
     ofstream file;
-    file.open(fileName);
+    file.open(fileName.c_str());//c._str()
     if(!file.is_open()){
         cout<<"File failed to open. Nothing written."<<endl;
         file.close();
@@ -99,6 +100,7 @@ void Tree::exportTree(std::string fileName){
     // Creates a new linked list of all employees.
     edge* printList = new edge(CEO);
     edge* endofList = printList;
+    file<<companyName<<delim2;//added feature
     while(printList!=NULL){
         // Finds the first employee of the current person
         edge* employee = printList->n->employees;
@@ -129,7 +131,7 @@ void Tree::exportTree(std::string fileName){
 // Imports an organizational structure from a file.
 void Tree::importTree(std::string fileName){
     ifstream file;
-    file.open(fileName);
+    file.open(fileName.c_str());//added c._str()
     if(!file.is_open()){
         cout<<"File not found."<<endl;
         return;
@@ -139,6 +141,9 @@ void Tree::importTree(std::string fileName){
     getline(cin, line);
     if(line.length()>0 && (line[0]=='y' || line[0]=='Y')){
         string errorMsg = "File is corrupt. No changes made.";
+        std::string company_Name;//added Feature
+        getline(file,line,delim2);//added Feature
+        company_Name = line;//added Feature
         getline(file, line, delim2);
         if(!acceptableName(line, NULL)){
             cout<<errorMsg<<endl;
@@ -188,6 +193,7 @@ void Tree::importTree(std::string fileName){
         // Deletes the original tree, then finishes the import by pointing CEO at the new tree.
         deleteEverything(CEO);
         CEO = newCEO;
+        companyName = company_Name;
     }
     file.close();
 };
@@ -281,6 +287,8 @@ void Tree::personInfo(string person_name){
 
 // Prints information about the entire organization structure.
 void Tree::printOrgStructure(){
+    cout<<companyName<<"'s "<<"Structure\n";//Added Feature
+    cout<<"===============================\n";//Added Feature
     // Uses BFS to print out all employees in order of seniority
     edge* printList = new edge(CEO);
     edge* endofList = printList;
@@ -613,3 +621,10 @@ string Tree::removeWhitespace(string str){
     }
     return str;
 };
+
+
+void Tree::companyNameChange(){
+    cout<<"Name of Company:"<<endl;//Added Feature
+    getline(cin,companyName);//Added Feature
+}
+
