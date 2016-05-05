@@ -18,7 +18,8 @@ int main(){
             <<"8. Export to file\n"
             <<"9. Import from file\n"
             <<"10. Change group\n"
-            <<"11. Quit"<<endl;
+            <<"11. Rename Company\n"
+            <<"12. Quit"<<endl;
         // Declares a MainMenu string to take input
         string MainMenu;
         getline(cin, MainMenu);
@@ -82,9 +83,27 @@ int main(){
             getline(cin, groupName);
             tree.changeGroup(MainMenu, groupName);
         }
-        else if(MainMenu=="11"){
+        else if(MainMenu=="11"){ //added feature
+            tree.companyNameChange();
+        }
+        else if(MainMenu=="12"){
             cout<<"Goodbye!\n";
             return 0;
         }
     }
 }
+
+//----------------------------------------------------------------------
+//------------------------Added Features--------------------------------
+//          -OrganizationMaker.cpp
+//              - Line 86       change company name option
+//          - Tree.h
+//              - Line 58       added company name change function
+//              - Line 72       added company name variable
+//          - Tree.cpp
+//              - Line 10       input for company name
+//              - Line 103      added company name to export function
+//              - Line 144-146, added company name changer to import file
+//                     196
+//              - Line 285-286  prints company name with organization structure
+//              - Line 620-623  company name change function
